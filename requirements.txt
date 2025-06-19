@@ -1,0 +1,6 @@
+git+https://github.com/openai/swarm.git
+streamlit 
+newspaper3k
+google-search-results
+lxml_html_clean
+dotenv
