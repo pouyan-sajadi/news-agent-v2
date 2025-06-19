@@ -37,7 +37,6 @@ Give it a topic (like *artificial intelligence*, *climate policy*, or *NVIDIA ea
   - `diversity_selector_agent`: selects a well-rounded subset
   - `debate_synthesizer_agent`: crafts the final structured report
 - **💬 Frontend**: [Streamlit](https://streamlit.io/) for interactive UI
-- **🔐 Secrets & Config**: `.env` + Streamlit Secrets compatibility
 - **📁 Modular Design**: Clean structure with `core`, `agents`, `utils`, `config`, and `tests`
 
 ---
@@ -59,5 +58,5 @@ SERPAPI_KEY=your-serpapi-key
 ```
 Running Locally:
 ```bash
-streamlit run app/main.py
+streamlit run main.py
 ```
