@@ -44,7 +44,7 @@ Give it a topic (like *artificial intelligence*, *climate policy*, or *NVIDIA ea
 ## 📦 Installation
 
 ```bash
-git clone https://github.com/pouyan-sajadi/news_debate_app.git
+git clone https://github.com/pouyan-sajadi/news-agent-v2.git
 cd news_debate_app
 python -m venv .venv
 source .venv/bin/activate  # or `.venv\Scripts\activate` on Windows

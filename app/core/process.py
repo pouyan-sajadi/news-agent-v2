@@ -18,7 +18,8 @@ def process_news(topic, status_callback=None):
             status_callback(msg)
 
     # 🔍 Search
-    notify("🔍 Searching for news...")
+    notify("🔍 Searching for news:")
+    notify("🔍 Scouting the web for the latest headlines...")
     search_response = client.run(
         agent=search_agent,
         messages=[{"role": "user", "content": f"Find recent news about {topic}"}]
@@ -36,7 +37,8 @@ def process_news(topic, status_callback=None):
         json.dump(raw_news_list, f, indent=2)
 
     # 🧠 Profile Sources
-    notify("🧠 Profiling sources...")
+    notify("🧠 Profiling sources:")
+    notify("🧠 Analyzing sources and their perspectives...")
     profile_response = client.run(
         agent=source_profiler_agent,
         messages=[{"role": "user", "content": f"Profile these articles:\n{json.dumps(raw_news_list, indent=2)}"}]
@@ -52,7 +54,8 @@ def process_news(topic, status_callback=None):
         json.dump(profiling_output, f, indent=2)
 
     # 🎯 Select Diverse Subset
-    notify("🧮 Selecting diverse subset...")
+    notify("🧮 Selecting diverse subset:")
+    notify("🧮 Curating a well-rounded, diverse set of articles...")
     diversity_response = client.run(
         agent=diversity_selector_agent,
         messages=[{"role": "user", "content": f"Select a diverse subset:\n{json.dumps(profiling_output, indent=2)}"}]
@@ -70,7 +73,8 @@ def process_news(topic, status_callback=None):
         json.dump(selected_articles, f, indent=2)
 
     # 🗣️ Synthesize Debate
-    notify("🗣️ Synthesizing report...")
+    notify("🗣️ Synthesizing report:")
+    notify("🗣️ Weaving it all into a compelling debate-style report...")
     debate_response = client.run(
         agent=debate_synthesizer_agent,
         messages=[{"role": "user", "content": f"Create a debate report:\n{json.dumps(selected_articles, indent=2)}"}]

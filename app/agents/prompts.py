@@ -75,6 +75,7 @@ Return your output as a JSON-style list of dictionaries, **one per article**, us
 [
   {
     "id": "...",
+    "title":...",
     "tone": "...",
     "perspective": ["...", "..."],
     "source_type": "...",
@@ -83,7 +84,7 @@ Return your output as a JSON-style list of dictionaries, **one per article**, us
   ...
 ]
 
-    Preserve the original id for article tracking.
+    Preserve the original id and title for article tracking.
 
     Do not include the full content in the output.
 
