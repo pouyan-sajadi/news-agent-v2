@@ -8,13 +8,24 @@ from app.config import SERPAPI_KEY, NUM_SOURCES
 from app.core.logger import logger
 import logging
 
-logger = logging.getLogger(__name__)
-
 def clean_text(text):
-    # Remove ASCII control characters and escape remaining ones
-    text = re.sub(r'[\x00-\x1F\x7F]', ' ', text)
-    text = text.replace('\\', '\\\\').replace('"', '\\"')
+    if not isinstance(text, str):
+        return ""
+    text = re.sub(r'[\x00-\x1f\x7f]', ' ', text)  # remove control chars
+    text = text.replace('\\', ' ')                # remove stray backslashes
+    text = text.replace('"', "'")                 # avoid breaking quotes
+    text = re.sub(r'\s+', ' ', text)              # collapse whitespace
     return text.strip()
+
+def is_json_serializable(article):
+    try:
+        json.dumps(article, ensure_ascii=False)
+        return True
+    except Exception as e:
+        logger.error(f"🚨 JSON serialization failed for article: {article.get('title', '[no title]')}")
+        logger.debug(f"Full article data:\n{json.dumps(article, indent=2, ensure_ascii=False)}")
+        logger.error(f"❌ Error: {e}")
+        return False
 
 def fetch_full_article(url):
     logger.debug(f"Attempting to fetch article from URL: {url}")
@@ -28,7 +39,13 @@ def fetch_full_article(url):
         return f"[Failed to fetch full article: {e}]"
 
 def search_news(topic):
-    
+    """
+    Fetches and compiles recent news articles on a given topic.
+
+    This function is designed to be called **once** by the search agent within the multi-agent pipeline.
+    It uses SerpAPI to retrieve headlines and the Newspaper library to extract full article content.
+    Returns a structured and cleaned JSON string of articles for downstream analysis.
+    """
     logger.debug("Calling SerpAPI...")
 
     client = serpapi.Client(api_key=SERPAPI_KEY)
@@ -46,7 +63,7 @@ def search_news(topic):
         news_results = results.get("news_results", [])
         logger.info(f"🔍 Found {len(news_results)} results from SerpAPI")
         for i, item in enumerate(news_results):
-            logger.info(f"{i+1}. {item.get('title', 'No title')}")
+            logger.debug(f"{i+1}. {item.get('title', 'No title')}")
 
     except Exception as e:
         return f"[Error fetching search results: {e}]"
@@ -57,14 +74,20 @@ def search_news(topic):
     compiled = []
     for item in news_results:
         full_text = fetch_full_article(item.get("link", ""))
-        compiled.append({
+        cleaned = clean_text(full_text)
+        logger.debug(f"🧼 Cleaned article:\n{cleaned[:300]}...")
+
+        article = {
             "id": str(uuid.uuid4()),  
             "title": item.get("title", "").strip(),
             "source": item.get("source", "").strip(),
             "date": item.get("date", "").strip(),
             "url": item.get("link", "").strip(),
-            "content": clean_text(full_text)
-            
-        })
+            "content": cleaned
+        }
+        if is_json_serializable(article):
+            compiled.append(article)
+        else:
+            logger.warning(f"⚠️ Skipping article due to serialization issue: {article['url']}")
 
     return json.dumps(compiled, indent=2, ensure_ascii=False)

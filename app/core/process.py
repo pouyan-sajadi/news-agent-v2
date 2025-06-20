@@ -7,6 +7,7 @@ from app.agents.agent_factory import (
     debate_synthesizer_agent
 )
 from swarm import Swarm
+from app.core.logger import logger
 
 client = Swarm()
 
@@ -17,7 +18,8 @@ def process_news(topic, status_callback=None):
         if status_callback:
             status_callback(msg)
 
-    # 🔍 Search
+    # Search
+    logger.info("🔍 Running Search Agent...")
     notify("🔍 Searching for news:")
     notify("🔍 Scouting the web for the latest headlines...")
     search_response = client.run(
@@ -28,15 +30,17 @@ def process_news(topic, status_callback=None):
     try:
         raw_news_list = json.loads(search_response.messages[-1]["content"])
     except json.JSONDecodeError as e:
-        return None, None, None, f"Search JSON decode error: {e}"
+        logger.exception("Failed to decode JSON from Search Agent")
+        return None, None, None, None, f"Search JSON decode error: {e}"
 
-    # 💾 Save raw articles
+    # Save raw articles
     os.makedirs("news_output", exist_ok=True)
     raw_file = f"news_output/{topic.replace(' ', '_')}_articles.json"
     with open(raw_file, "w", encoding="utf-8") as f:
         json.dump(raw_news_list, f, indent=2)
 
-    # 🧠 Profile Sources
+    # Profile Sources
+    logger.info("Running Source Profiler Agent...")
     notify("🧠 Profiling sources:")
     notify("🧠 Analyzing sources and their perspectives...")
     profile_response = client.run(
@@ -47,13 +51,15 @@ def process_news(topic, status_callback=None):
     try:
         profiling_output = json.loads(profile_response.messages[-1]["content"])
     except json.JSONDecodeError as e:
-        return None, None, None, f"Profiler JSON decode error: {e}"
+        logger.exception("Failed to decode JSON from Profiler Agent")
+        return None, None, None, None, f"Profiler JSON decode error: {e}"
 
     profiling_file = f"news_output/{topic.replace(' ', '_')}_profiling.json"
     with open(profiling_file, "w", encoding="utf-8") as f:
         json.dump(profiling_output, f, indent=2)
 
-    # 🎯 Select Diverse Subset
+    # Select Diverse Subset
+    logger.info("Running Diversity Selector Agent...")
     notify("🧮 Selecting diverse subset:")
     notify("🧮 Curating a well-rounded, diverse set of articles...")
     diversity_response = client.run(
@@ -64,7 +70,8 @@ def process_news(topic, status_callback=None):
     try:
         selected_ids = json.loads(diversity_response.messages[-1]["content"])
     except json.JSONDecodeError as e:
-        return None, None, None, f"Diversity selector JSON decode error: {e}"
+        logger.exception("Failed to decode JSON from Diversity Selector Agent")
+        return None, None, None, None, f"Diversity selector JSON decode error: {e}"
 
     selected_articles = [a for a in raw_news_list if a["id"] in selected_ids]
 
@@ -72,7 +79,8 @@ def process_news(topic, status_callback=None):
     with open(selected_file, "w", encoding="utf-8") as f:
         json.dump(selected_articles, f, indent=2)
 
-    # 🗣️ Synthesize Debate
+    # Synthesize Debate
+    logger.info("Running Debate Synthesizer Agent...")
     notify("🗣️ Synthesizing report:")
     notify("🗣️ Weaving it all into a compelling debate-style report...")
     debate_response = client.run(
@@ -85,4 +93,4 @@ def process_news(topic, status_callback=None):
     with open(report_file, "w", encoding="utf-8") as f:
         f.write(final_report)
 
-    return selected_articles, profiling_output, final_report, None
+    return raw_news_list, selected_articles, profiling_output, final_report, None

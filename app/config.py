@@ -19,4 +19,5 @@ def get_secret(key, default=None):
 SERPAPI_KEY = get_secret("SERPAPI_KEY")
 OPENAI_API_KEY = get_secret("OPENAI_API_KEY")
 MODEL = "gpt-4.1-nano-2025-04-14"
+#MODEL = "gpt-4.1-mini-2025-04-14"
 NUM_SOURCES = 10
