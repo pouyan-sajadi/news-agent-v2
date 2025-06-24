@@ -53,5 +53,6 @@ def get_secret(key, default=None):
 print("🔧 Loading configuration...")
 SERPAPI_KEY = get_secret("SERPAPI_KEY")
 OPENAI_API_KEY = get_secret("OPENAI_API_KEY")
-MODEL = "gpt-4o-mini"
+#MODEL = "gpt-4o-mini"
+MODEL = "gpt-4.1-mini-2025-04-14"
 NUM_SOURCES = 10
