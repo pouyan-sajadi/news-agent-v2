@@ -3,7 +3,7 @@ import uuid
 import json
 from datetime import datetime
 from newspaper import Article
-import serpapi
+from serpapi import GoogleSearch
 from app.config import SERPAPI_KEY, NUM_SOURCES
 from app.core.logger import logger
 import logging
@@ -48,22 +48,24 @@ def search_news(topic):
     """
     logger.debug("Calling SerpAPI...")
 
-    client = serpapi.Client(api_key=SERPAPI_KEY)
-
     params = {
         "engine": "google",
         "q": f"{topic} news {datetime.now().strftime('%Y-%m')}",
         "tbm": "nws",  
-        "num": NUM_SOURCES
+        "num": NUM_SOURCES,
+        "api_key": SERPAPI_KEY  
+
     }
     logger.debug(f"Search parameters: {params}")
 
     try:
-        results = client.search(params)
+        search = GoogleSearch(params)
+        results = search.get_dict()
         news_results = results.get("news_results", [])
         logger.info(f"🔍 Found {len(news_results)} results from SerpAPI")
         for i, item in enumerate(news_results):
             logger.debug(f"{i+1}. {item.get('title', 'No title')}")
+
 
     except Exception as e:
         return f"[Error fetching search results: {e}]"
