@@ -4,3 +4,10 @@ newspaper3k
 google-search-results
 lxml_html_clean
 dotenv
+pytest 
+pytest-mock 
+pytest-cov
+flake8
+black
+safety
+bandit

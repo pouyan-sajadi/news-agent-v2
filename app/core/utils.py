@@ -21,11 +21,11 @@ def is_json_serializable(article):
     try:
         json.dumps(article, ensure_ascii=False)
         return True
-    except Exception as e:
+    except (TypeError, ValueError) as e:  
         logger.error(f"🚨 JSON serialization failed for article: {article.get('title', '[no title]')}")
-        logger.debug(f"Full article data:\n{json.dumps(article, indent=2, ensure_ascii=False)}")
+        logger.debug(f"Full article data:\n{json.dumps(article, indent=2, ensure_ascii=False, default=str)}")  # Add default=str for debugging
         logger.error(f"❌ Error: {e}")
-        return False
+        return False    
 
 def fetch_full_article(url):
     logger.debug(f"Attempting to fetch article from URL: {url}")
