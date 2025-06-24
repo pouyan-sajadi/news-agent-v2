@@ -53,8 +53,13 @@ jobs:
     
     # Step 6: Run tests
     - name: Run tests with pytest
+      env:  
+        SERPAPI_KEY: fake-serpapi-key-for-testing
+        OPENAI_API_KEY: fake-openai-key-for-testing
+        NUM_SOURCES: 10
       run: |
-        pytest tests/ -v --cov=app --cov-report=xml --cov-report=term-missing
+                pytest tests/ -v
+
     
   # Security check job
   security:
