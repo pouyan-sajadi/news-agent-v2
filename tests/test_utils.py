@@ -1,10 +1,8 @@
-# tests/unit/test_utils.py
 import pytest
 import json
 import uuid
-from unittest.mock import patch, Mock, MagicMock
-
-# Import the functions we want to test
+from unittest.mock import patch, Mock
+# Import the functions to test
 from app.core.utils import clean_text, is_json_serializable, fetch_full_article
 
 
