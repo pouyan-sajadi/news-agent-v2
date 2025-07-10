@@ -85,10 +85,9 @@ with col2:
     st.markdown("<br>", unsafe_allow_html=True)  
     generate_btn = st.button("**Deploy Agents**", type="primary", use_container_width=True)
 
-logger.info(f"🧠 User requested topic: {topic}")
-
 if generate_btn:
     if topic.strip():
+        logger.info(f"🧠 User requested topic: {topic}")
         try:
             logger.info("🚀 Starting agentic pipeline for topic: %s", topic)
             
