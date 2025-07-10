@@ -9,6 +9,42 @@ st.set_page_config(
 )
 
 st.title("🗞️ News Agent Swarm v2")
+
+# Sidebar configuration
+with st.sidebar:
+    st.header("🎛️ Customize Your News Experience")
+    
+    # Focus Dial
+    st.subheader("🎯 Focus Dial")
+    focus = st.radio(
+        "What matters most to you?",
+        options=[
+            "Just the facts",
+            "Human Impact", 
+            "The Clash",
+            "Hidden Angles",
+            "The Money Trail"
+        ],
+        index=0
+    )
+    st.session_state.focus = focus
+    st.divider()
+    
+    # Depth Level
+    st.subheader("🔍 Reading Depth")
+    depth = st.select_slider(
+        "How much time do you have?",
+        options=[1, 2, 3],
+        value=2,
+        format_func=lambda x: {
+            1: "Quick Hit (30 sec)",
+            2: "Espresso Shot (2 min)",
+            3: "Coffee Break (5+ min)"
+        }[x]
+    )
+    st.session_state.depth = depth
+    
+    st.divider()
 st.markdown("""
 ### Break free from your news bubble. Get the FULL story.
 
@@ -65,7 +101,7 @@ if generate_btn:
                 def update(msg):
                     status.update(label=f"{msg}")
   
-                raw_news_list, selected_articles, profiling_output, final_report, error = process_news(topic, status_callback=update)    
+                raw_news_list, selected_articles, profiling_output, final_report, error = process_news(topic, user_preferences={'focus': focus, 'depth' : depth}, status_callback=update)    
 
             if error:
                 st.error(f"💥 **Agent swarm crashed:** {error}")
