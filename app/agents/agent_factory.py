@@ -1,5 +1,5 @@
 from swarm import Agent
-from .prompts import search_prompt, profiler_prompt, diversity_prompt, synthesizer_prompt
+from .prompts import search_prompt, profiler_prompt, diversity_prompt, synthesizer_prompt, creative_editor_prompt
 from app.core.utils import search_news  
 from app.config import MODEL
 
@@ -25,5 +25,11 @@ diversity_selector_agent = Agent(
 debate_synthesizer_agent = Agent(
     name="Debate Synthesizer",
     instructions=synthesizer_prompt,
+    model=MODEL
+)
+
+creative_editor_agent = Agent(
+    name="Creative Editor",
+    instructions=creative_editor_prompt,
     model=MODEL
 )
