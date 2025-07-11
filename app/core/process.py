@@ -22,6 +22,7 @@ def process_news(topic, user_preferences, status_callback=None):
 
     focus = user_preferences.get("focus", "Just the Facts")
     depth = user_preferences.get("depth", 2)
+    tone = user_preferences.get("tone", "News with attitude")
 
     # Search
     logger.info("🔍 Running Search Agent...")
@@ -76,7 +77,7 @@ def process_news(topic, user_preferences, status_callback=None):
     logger.debug("Passing this data to Diversity Selector: %s", json.dumps(profiling_output, indent=2))
     notify("🧮 Selecting diverse subset:")
     notify("🧮 Curating a well-rounded, diverse set of articles...")
-    logger.info("depth parameter: %s", depth)
+    logger.debug("depth parameter: %s", depth)
     diversity_selector_agent_instance = create_diversity_selector_agent(focus, depth)
     diversity_message = f"Select a diverse subset from these profiles: {json.dumps(profiling_output, indent=2)}"
     try:
@@ -91,7 +92,7 @@ def process_news(topic, user_preferences, status_callback=None):
     try:
         logger.debug("Raw response from Diversity Selector: %s", diversity_response.messages[-1]["content"])
         selected_ids = json.loads(diversity_response.messages[-1]["content"])
-        logger.info(f"Diversity Selector returned: {selected_ids}")
+        logger.debug(f"Diversity Selector returned: {selected_ids}")
     except json.JSONDecodeError as e:
         logger.exception("Failed to decode JSON from Diversity Selector Agent")
         return None, None, None, None, f"Diversity selector JSON decode error: {e}"
@@ -122,7 +123,7 @@ def process_news(topic, user_preferences, status_callback=None):
     logger.info("Running Creative Editor Agent...")
     notify("🎨 Applying creative touch:")
     notify("🎨 Formatting the final report for maximum engagement...")
-    creative_editor_agent_instance = create_creative_editor_agent(focus, depth)
+    creative_editor_agent_instance = create_creative_editor_agent(focus, depth, tone)
     creative_response = client.run(
         agent=creative_editor_agent_instance,
         messages=[{"role": "user", "content": f"Rewrite this report:\n{final_report}"}]

@@ -45,6 +45,20 @@ with st.sidebar:
     st.session_state.depth = depth
     
     st.divider()
+    # Content Feature
+    st.subheader(" Content Feature")
+    tone = st.radio(
+        "Spice Up Your Read",
+        options=[
+            "Grandma Mode",
+            "Gen Z Mode",
+            "Sharp & Snappy", 
+            "News with attitude"
+        ],
+        index=0
+    )
+    st.session_state.tone = tone
+     
 st.markdown("""
 ### Break free from your news bubble. Get the FULL story.
 
@@ -100,7 +114,7 @@ if generate_btn:
                 def update(msg):
                     status.update(label=f"{msg}")
   
-                raw_news_list, selected_articles, profiling_output, final_report, error = process_news(topic, user_preferences={'focus': focus, 'depth' : depth}, status_callback=update)    
+                raw_news_list, selected_articles, profiling_output, final_report, error = process_news(topic, user_preferences={'focus': focus, 'depth' : depth, 'tone' : tone}, status_callback=update)    
 
             if error:
                 st.error(f"💥 **Agent swarm crashed:** {error}")
@@ -177,6 +191,6 @@ st.markdown("---")
 st.markdown("""
 <div style='text-align: center; color: #666; font-size: 0.9em;'>
 💡 <strong>How it works:</strong> OpenAI Swarm orchestrates multiple LLM agents • SerpAPI for news search • Real-time article scraping<br>
-🛠️ Built with Python, Streamlit, and a lot of caffeine ☕
+ Built with Python, Streamlit, and a lot of caffeine :D
 </div>
 """, unsafe_allow_html=True)

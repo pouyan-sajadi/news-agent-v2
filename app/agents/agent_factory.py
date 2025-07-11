@@ -32,9 +32,9 @@ def create_debate_synthesizer_agent(focus: str, depth: int):
         model=MODEL
     )
 
-def create_creative_editor_agent(focus: str, depth: int):
+def create_creative_editor_agent(focus: str, depth: int, tone: str):
     return Agent(
         name="Creative Editor",
-        instructions=get_creative_editor_prompt(focus, depth),
+        instructions=get_creative_editor_prompt(focus, depth, tone),
         model=MODEL
     )
