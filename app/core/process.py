@@ -37,6 +37,15 @@ def process_news(topic, user_preferences, status_callback=None):
             messages=[{"role": "user", "content": f"Find recent news about {topic}"}]
         )
         raw_news_list = json.loads(search_response.messages[-1]["content"])
+            # Check if no articles were found
+        if len(raw_news_list) == 0:
+            logger.warning(f"No articles found for topic: {topic}")
+            notify({
+                "step": "search", 
+                "status": "error", 
+                 "message": f"No news about '{topic}' right now. Try something that's been in the headlines recently!"
+            })
+            return None
         logger.info(f"Found {len(raw_news_list)} articles.")
         final_results['raw_news_list'] = raw_news_list
         notify({"step": "search", "status": "completed", "data": raw_news_list})

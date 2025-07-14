@@ -3,7 +3,7 @@ from app.core.process import process_news
 from app.core.logger import logger
 
 st.set_page_config(
-    page_title="Signal - Cut Through Noise", 
+    page_title="Signal-Cut Through Noise", 
     page_icon="📡",
     layout="wide"
 )
@@ -13,67 +13,96 @@ st.markdown("""
 <style>
     /* Core body and text */
     body {
-        color: #81C784; /* Medium green for general text */
+        color: #000000; /* Dark green for general text */
     }
     .stApp {
         background-color: #F5F7FA; /* Light grey background */
     }
-    h1, h2, h3, h4, h5, h6 {
-        color: #2E7D32; /* Dark green for headers */
+    
+    /* Headers - Important elements get larger sizes */
+    h1 {
+        color: #1B5E20; /* Very dark green for headers */
         font-weight: 600;
     }
+    h2 {
+        color: #1B5E20;
+        font-weight: 600;
+    }
+    h3 {
+        color: #1B5E20;
+        font-weight: 600;
+    }
+    h4, h5, h6 {
+        color: #1B5E20;
+        font-weight: 600;
+    }
+    
+    /* General markdown text */
     .stMarkdown {
-        color: #4CAF50; /* Standard green for markdown text */
+        color: #000000; /* Dark green for markdown text */
     }
-    .final-report .stMarkdown {
-        color: #071a02; /* Very dark green for report text */
-        background-color: #FFFFFF;
-        padding: 20px;
-        border-radius: 10px;
-        border: 1px solid #C8E6C9;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    .stMarkdown p {
+        line-height: 1.6;
     }
-
-    /* Buttons and interactive elements */
+    
+    /* Bold text in markdown - for important labels */
+    .stMarkdown p strong {
+        color: #000000; /* Darker green for emphasis */
+    }
+    
+    /* Buttons - Important CTAs */
     .stButton>button {
-        background-color: #388E3C; /* Forest green */
+        background-color: #2E7D32; /* Dark green */
         color: #FFFFFF;
         border-radius: 8px;
         border: none;
-        font-weight: 500;
+        font-weight: 600;
+        padding: 12px 24px !important;
         transition: all 0.2s ease;
     }
     .stButton>button:hover {
-        background-color: #2E7D32;
+        background-color: #1B5E20;
         transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(56, 142, 60, 0.3);
+        box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
     }
 
     /* Expander and containers */
     .stExpander {
-        border-color: #A5D6A7 !important;
+        border-color: #66BB6A !important;
         border-radius: 8px;
         background-color: #FFFFFF;
     }
     .stExpander header {
-        color: #2E7D32;
+        color: #1B5E20;
         font-weight: 500;
     }
 
-    /* Text input */
+
+    /* Text input - Important user interaction */
+    .stTextInput label {
+        color: #1B5E20 !important;
+    }
+    .stTextInput label p, .stTextInput label em {
+    }
     .stTextInput input {
         background-color: #FFFFFF !important;
-        color: #1B5E20 !important;
-        border: 1px solid #A5D6A7;
+        color: #0D3E10 !important;
+        border: 1px solid #66BB6A;
+        padding: 10px 12px !important;
+        height: 50px !important;
+    }
+    .stTextInput input::placeholder {
+        color: #66BB6A !important;
+        opacity: 0.7;
     }
     .stTextInput input:focus {
-        border-color: #66BB6A !important;
-        box-shadow: 0 0 0 1px #66BB6A;
+        border-color: #388E3C !important;
+        box-shadow: 0 0 0 1px #388E3C;
     }
 
     /* Radio buttons and sliders */
     .stRadio label, .stSlider label {
-        color: #388E3C !important;
+        color: #1B5E20 !important;
     }
     
     /* Warning and error messages */
@@ -91,35 +120,50 @@ st.markdown("""
     /* Status messages */
     div[data-testid="stStatusContainer"] {
         background-color: #FFFFFF;
-        border: 1px solid #C8E6C9;
+        border: 1px solid #81C784;
     }
     
     /* Dividers */
     hr {
-        border-color: #C8E6C9;
+        border-color: #81C784;
     }
     
-    /* Footer and small text - darker green for small fonts */
+    /* Footer - less important */
     div[style*='text-align: center'] {
-        color: #2E7D32 !important;
+        color: #1B5E20 !important;
     }
     
     /* Links */
     a {
-        color: #388E3C !important;
+        color: #2E7D32 !important;
         text-decoration: none;
     }
     a:hover {
-        color: #1B5E20 !important;
+        color: #0D3E10 !important;
         text-decoration: underline;
     }
     
     /* Code blocks */
     code {
-        background-color: #E8F5E9;
-        color: #1B5E20;
+        background-color: #C8E6C9;
+        color: #0D3E10;
         padding: 2px 6px;
         border-radius: 4px;
+    }
+    
+    /* Captions and help text - less important */
+    .stCaption, [data-testid="stCaptionContainer"] {
+        color: #0D3E10 !important;
+    }
+    
+    /* Small text elements */
+    small, .small {
+        color: #0D3E10 !important;
+    }
+    
+    /* General paragraph and list items */
+    p, li {
+        line-height: 1.6;
     }
     
     /* Custom scrollbar */
@@ -128,31 +172,49 @@ st.markdown("""
         background-color: #F5F7FA;
     }
     ::-webkit-scrollbar-thumb {
-        background-color: #A5D6A7;
+        background-color: #66BB6A;
         border-radius: 5px;
     }
     ::-webkit-scrollbar-thumb:hover {
-        background-color: #81C784;
+        background-color: #388E3C;
+    }
+    
+    /* Hide streamlit elements */
+    .css-pxxe24 {
+        visibility: hidden;
     }
     
     /* Toast notifications */
     .stToast {
         background-color: #FFFFFF !important;
-        color: #2E7D32 !important;
-        border: 1px solid #A5D6A7 !important;
+        color: #1B5E20 !important;
+        border: 1px solid #66BB6A !important;
     }
     
-    /* Captions and help text - darker green for smaller fonts */
-    .stCaption, [data-testid="stCaptionContainer"] {
-        color: #1B5E20 !important;
-        font-size: 0.875rem;
+    /* Special styling for inline styles */
+    div[data-testid="stHorizontalBlock"] > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) {
+        padding-top: 0rem;
+
     }
-    
-    /* Small text elements */
-    small, .small {
-        color: #1B5E20 !important;
+    .stExpander header {
+    color: #1B5E20;
+    font-weight: 500;
+    }
+    /* Target h4 elements in markdown */
+    .stMarkdown h4 {
+        color: #1B5E20;
+    }
+    h1 {
+    color: #1B5E20;
+    font-weight: 600;
+    }
+    /* Target the main report container's markdown elements */
+    div[data-testid="stVerticalBlock"] > div:has(> div > div > h2) ~ div .stMarkdown p {
     }
 
+    /* Keep the bold text at the same size */
+    div[data-testid="stVerticalBlock"] > div:has(> div > div > h2) ~ div .stMarkdown p strong {
+}            
 </style>
 """, unsafe_allow_html=True)
 
@@ -165,10 +227,29 @@ if 'report_history' not in st.session_state:
     st.session_state.report_history = []
 if 'new_report_generated' not in st.session_state:
     st.session_state.new_report_generated = False
+if 'report_just_finished' not in st.session_state:
+    st.session_state.report_just_finished = False
+
+# --- TOP-LEVEL ARCHIVING LOGIC ---
+# This runs at the very top of every script execution
+if st.session_state.report_just_finished:
+    if st.session_state.current_report and st.session_state.current_report.get("creative_report"):
+        st.session_state.report_history.insert(0, st.session_state.current_report)
+        st.session_state.new_report_generated = True # Trigger balloons/toast for the archived report
+    st.session_state.current_report = None # Clear current report to make space for new search
+    st.session_state.report_just_finished = False # Reset the flag
+
+# --- UI CONTAINERS ---
+main_report_container = st.container()
+history_container = st.container()
+about_container = st.container()
 
 # --- MAIN APPLICATION UI ---
 
-st.markdown("#### Turn any news topic into a multi-perspective analysis with your choice of focus, depth, and tone")
+st.markdown("<h4 style='font-size: 80px !important;'>Turn any news topic into a multi-perspective report with your choice of focus, depth, and tone</h4>", unsafe_allow_html=True)
+st.write("")  # Empty line
+st.write("")  # Empty line
+st.write("")  # Empty line
 
 # Topic Input
 topic_input = st.text_input(
@@ -179,7 +260,7 @@ topic_input = st.text_input(
 )
 
 # Analysis Settings
-st.markdown("#### Analysis Settings")
+st.markdown("### Analysis Settings")
 
 col_spacer1, col1, col_spacer2, col2, col_spacer3, col3, col_spacer4 = st.columns([0.1, 2, 0.5, 2, 0.5, 2, 0.5])
 
@@ -277,23 +358,24 @@ st.markdown('''
 ''', unsafe_allow_html=True)
 
 # Deploy Button
-generate_btn = st.button("**Deploy Analysis Agents**", type="primary", use_container_width=True)
+generate_btn = st.button("**Build My Report**", type="primary", use_container_width=True)
 
 # --- UI CONTAINERS ---
 main_report_container = st.container()
+status_container = st.container()
 history_container = st.container()
 about_container = st.container()
 
 # --- DISPLAY ARCHIVED REPORTS (Always Visible) ---
 with history_container:
     st.markdown("---")
-    st.header("Previous Analyses")
+    st.header("Previous Reports")
     if st.session_state.report_history:
         for i, report_data in enumerate(st.session_state.report_history):
             with st.expander(f"Report for '{report_data.get('topic', 'N/A')}'", expanded=False):
                 st.markdown(report_data.get('creative_report', 'No report available.'))
     else:
-        st.info("No previous analyses yet. Run an analysis above to see it appear here!")
+        st.info("No previous reports yet. Search for a report above to see it appear here:)")
 
 # --- ABOUT SECTION (Always Visible) ---
 with about_container:
@@ -341,8 +423,9 @@ if generate_btn:
             "agent_details": {}
         }
         st.session_state.new_report_generated = False
+        st.session_state.report_just_finished = False # Ensure this is false for a new run
 
-        with main_report_container:
+        with status_container: # Use the new status container
             st.markdown("### Agents Status")
             st.markdown("*Grab a coffee - this might take **2-3 minutes**...*")
             with st.status("🚀 Initializing agent swarm...", expanded=True) as status:
@@ -366,7 +449,7 @@ if generate_btn:
                         
                         if step == "editing":
                             st.session_state.current_report["creative_report"] = data
-                            st.session_state.new_report_generated = True
+                            st.session_state.report_just_finished = True # Set the new flag here
                         
                         status.update(label=f"✅ {completed_message}")
 
@@ -385,11 +468,12 @@ if generate_btn:
         st.warning("🎯 **Hey!** You forgot to enter a topic.")
 
 # --- DISPLAY CURRENT REPORT ---
+# This block will always display the last completed report in main_report_container
 if st.session_state.current_report and st.session_state.current_report.get("creative_report"):
     with main_report_container:
         st.markdown("---")
-        st.header("📰 The Debate Breakdown")
-        st.markdown(f"<div class='final-report'>{st.session_state.current_report['creative_report']}</div>", unsafe_allow_html=True)
+        st.header("The Full Signal")
+        st.markdown(st.session_state.current_report['creative_report'])  # Let Streamlit process markdown normally
 
         if st.session_state.new_report_generated:
             st.toast("Your report is ready!", icon="🎉")
@@ -432,5 +516,6 @@ st.markdown('''
 Built with Python, Streamlit, and a lot of caffeine :D | <a href="https://github.com/pouyan-sajadi/news-agent-v2" target="_blank">GitHub Project</a>
 </div>
 ''', unsafe_allow_html=True)
+
 
 
