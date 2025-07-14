@@ -8,13 +8,163 @@ st.set_page_config(
     layout="wide"
 )
 
+# --- CUSTOM STYLES ---
+st.markdown("""
+<style>
+    /* Core body and text */
+    body {
+        color: #81C784; /* Medium green for general text */
+    }
+    .stApp {
+        background-color: #F5F7FA; /* Light grey background */
+    }
+    h1, h2, h3, h4, h5, h6 {
+        color: #2E7D32; /* Dark green for headers */
+        font-weight: 600;
+    }
+    .stMarkdown {
+        color: #4CAF50; /* Standard green for markdown text */
+    }
+    .final-report .stMarkdown {
+        color: #071a02; /* Very dark green for report text */
+        background-color: #FFFFFF;
+        padding: 20px;
+        border-radius: 10px;
+        border: 1px solid #C8E6C9;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Buttons and interactive elements */
+    .stButton>button {
+        background-color: #388E3C; /* Forest green */
+        color: #FFFFFF;
+        border-radius: 8px;
+        border: none;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+    .stButton>button:hover {
+        background-color: #2E7D32;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(56, 142, 60, 0.3);
+    }
+
+    /* Expander and containers */
+    .stExpander {
+        border-color: #A5D6A7 !important;
+        border-radius: 8px;
+        background-color: #FFFFFF;
+    }
+    .stExpander header {
+        color: #2E7D32;
+        font-weight: 500;
+    }
+
+    /* Text input */
+    .stTextInput input {
+        background-color: #FFFFFF !important;
+        color: #1B5E20 !important;
+        border: 1px solid #A5D6A7;
+    }
+    .stTextInput input:focus {
+        border-color: #66BB6A !important;
+        box-shadow: 0 0 0 1px #66BB6A;
+    }
+
+    /* Radio buttons and sliders */
+    .stRadio label, .stSlider label {
+        color: #388E3C !important;
+    }
+    
+    /* Warning and error messages */
+    .stAlert.st-warning {
+        background-color: #FFF9C4;
+        color: #F57C00;
+        border: 1px solid #FFB74D;
+    }
+    .stAlert.st-error {
+        background-color: #FFEBEE;
+        color: #C62828;
+        border: 1px solid #EF5350;
+    }
+
+    /* Status messages */
+    div[data-testid="stStatusContainer"] {
+        background-color: #FFFFFF;
+        border: 1px solid #C8E6C9;
+    }
+    
+    /* Dividers */
+    hr {
+        border-color: #C8E6C9;
+    }
+    
+    /* Footer and small text - darker green for small fonts */
+    div[style*='text-align: center'] {
+        color: #2E7D32 !important;
+    }
+    
+    /* Links */
+    a {
+        color: #388E3C !important;
+        text-decoration: none;
+    }
+    a:hover {
+        color: #1B5E20 !important;
+        text-decoration: underline;
+    }
+    
+    /* Code blocks */
+    code {
+        background-color: #E8F5E9;
+        color: #1B5E20;
+        padding: 2px 6px;
+        border-radius: 4px;
+    }
+    
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+        width: 10px;
+        background-color: #F5F7FA;
+    }
+    ::-webkit-scrollbar-thumb {
+        background-color: #A5D6A7;
+        border-radius: 5px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background-color: #81C784;
+    }
+    
+    /* Toast notifications */
+    .stToast {
+        background-color: #FFFFFF !important;
+        color: #2E7D32 !important;
+        border: 1px solid #A5D6A7 !important;
+    }
+    
+    /* Captions and help text - darker green for smaller fonts */
+    .stCaption, [data-testid="stCaptionContainer"] {
+        color: #1B5E20 !important;
+        font-size: 0.875rem;
+    }
+    
+    /* Small text elements */
+    small, .small {
+        color: #1B5E20 !important;
+    }
+
+</style>
+""", unsafe_allow_html=True)
+
 st.title("Pick your topic, pick your style – see every side of the story")
 
-# Initialize session state variables if they don't exist
+# Initialize session state variables
 if 'current_report' not in st.session_state:
     st.session_state.current_report = None
 if 'report_history' not in st.session_state:
     st.session_state.report_history = []
+if 'new_report_generated' not in st.session_state:
+    st.session_state.new_report_generated = False
 
 # --- MAIN APPLICATION UI ---
 
@@ -48,7 +198,7 @@ with col1:
         ],
         index=0,
         key="focus_setting",
-        help="""
+        help='''
         **Just the facts**: Core information, data, and verified claims only
         
         **Human Impact**: Personal stories and how real people are affected
@@ -58,7 +208,7 @@ with col1:
         **Hidden Angles**: Overlooked details and underreported perspectives
         
         **The Money Trail**: Financial implications and who profits/pays
-        """
+        '''
     )
 
 with col2:
@@ -75,13 +225,13 @@ with col2:
             3: "Deep Dive"
         }[x],
         key="depth_setting",
-        help="""
+        help='''
         **Quick Scan (30 sec)**: Key points only, perfect for a quick update
         
         **Standard Read (2 min)**: Balanced coverage with context
         
         **Deep Dive (5+ min)**: Comprehensive analysis with full details
-        """
+        '''
     )
 
 with col3:
@@ -98,7 +248,7 @@ with col3:
         ],
         index=0,
         key="tone_setting",
-        help="""
+        help='''
         **Grandma Mode**: Clear, patient explanations with context
         
         **Gen Z Mode**: Quick, energetic, with current references
@@ -106,7 +256,7 @@ with col3:
         **Express Mode**: Crisp, efficient, straight to the point
         
         **Commentary Mode**: Includes analysis and connects the dots
-        """
+        '''
     )
 
 # Map tone_option to the tone expected by the agent
@@ -118,213 +268,169 @@ tone_mapping = {
         }
 tone = tone_mapping.get(tone_option, "Quick Hit Mode") 
 
-st.markdown("""
+st.markdown('''
 <style>
     div[data-testid="stHorizontalBlock"] > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) {
         padding-top: 0rem;
     }
 </style>
-""", unsafe_allow_html=True)
+''', unsafe_allow_html=True)
 
 # Deploy Button
 generate_btn = st.button("**Deploy Analysis Agents**", type="primary", use_container_width=True)
 
-# --- PROCESSING LOGIC ---
+# --- UI CONTAINERS ---
+main_report_container = st.container()
+history_container = st.container()
+about_container = st.container()
 
-# This block executes when the user clicks the button
+# --- DISPLAY ARCHIVED REPORTS (Always Visible) ---
+with history_container:
+    st.markdown("---")
+    st.header("Previous Analyses")
+    if st.session_state.report_history:
+        for i, report_data in enumerate(st.session_state.report_history):
+            with st.expander(f"Report for '{report_data.get('topic', 'N/A')}'", expanded=False):
+                st.markdown(report_data.get('creative_report', 'No report available.'))
+    else:
+        st.info("No previous analyses yet. Run an analysis above to see it appear here!")
+
+# --- ABOUT SECTION (Always Visible) ---
+with about_container:
+    st.markdown("---")
+    with st.expander("About This Application"):
+        st.markdown('''
+        ### Break free from your news bubble. Get the FULL story.
+
+        **The Problem:** Every news source has bias. CNN leans left, Fox leans right. TechCrunch loves startups, Reuters stays diplomatic. 
+        Your location, their politics, the author's expertise—it all shapes what you read. Relying on 1-2 sources? You're missing half the story.
+
+        **The Solution:** This smart news analyzer automatically:
+        - **Finds stories you'd miss** (sources from different countries, politics, industries)
+        - **Identifies each source's angle** (who's pro/anti, regional vs global perspective)
+        - **Shows you the full debate** (what supporters say vs what critics argue)  
+        - **Delivers one balanced summary** (all viewpoints in 2 minutes of reading)
+
+        **Bottom line:** Get the nuanced, multi-angle story in 2 minutes instead of spending an hour tab-hopping between biased sources.
+
+        ---
+
+        **How it works:**
+        - 🕷️ **Search Agent**: Crawls Google News for fresh articles
+        - 🧠 **Profiler Agent**: Tags sources by tone, region, and bias  
+        - 🎯 **Diversity Selector**: Picks articles that actually disagree with each other
+        - 🗣️ **Debate Synthesizer**: Crafts a structured report with multiple viewpoints
+        - 🎨 **Creative Editor**: Polishes the final output based on selected tone and depth.
+
+        **Pro tip**: Try controversial topics like "AI regulation", "crypto crash", or "remote work debate" for insightful results.
+        ''')
+
+# --- PROCESSING LOGIC ---
 if generate_btn:
     if topic_input.strip():
         logger.info(f"🧠 User requested topic: {topic_input}")
 
-        # Archive the previous report if it exists
-        if st.session_state.current_report:
-            st.session_state.report_history.append(st.session_state.current_report)
+        # Archive the previous valid report
+        if st.session_state.current_report and st.session_state.current_report.get("creative_report"):
+            st.session_state.report_history.insert(0, st.session_state.current_report)
         
-        # Clear current report for new analysis
+        # Reset the current report state
         st.session_state.current_report = {
             "topic": topic_input,
             "creative_report": None,
             "agent_details": {}
         }
+        st.session_state.new_report_generated = False
 
-        # --- UI Placeholders for Live Updates ---
-        st.markdown("### Agent Processing Details")
-        final_report_container = st.container()
+        with main_report_container:
+            st.markdown("### Agents Status")
+            st.markdown("*Grab a coffee - this might take **2-3 minutes**...*")
+            with st.status("🚀 Initializing agent swarm...", expanded=True) as status:
+                def update_ui_callback(output):
+                    step = output.get("step")
+                    status_val = output.get("status")
+                    data = output.get("data")
+                    message = output.get("message")
 
-        expanders = {
-            "search": st.expander("**1. Search Agent** - Finding articles...", expanded=True),
-            "profiling": st.expander("**2. Profiler Agent** - Analyzing sources...", expanded=False),
-            "selection": st.expander("**3. Diversity Selector** - Choosing articles...", expanded=False),
-            "synthesis": st.expander("**4. Debate Synthesizer** - Structuring report...", expanded=False),
-            "editing": st.expander("**5. Creative Editor** - Polishing output...", expanded=False),
-        }
-        
-        # Create placeholders inside each expander for dynamic content
-        placeholders = {step: expander.empty() for step, expander in expanders.items()}
+                    if status_val == "running":
+                        status.update(label=f"⏳ {message}")
+                    elif status_val == "completed":
+                        st.session_state.current_report["agent_details"][step] = data
+                        completed_message = {
+                            "search": f"Found {len(data)} articles. Now profiling...",
+                            "profiling": "Profiling complete. Now selecting diverse sources...",
+                            "selection": f"Selected {len(data)} articles. Now synthesizing...",
+                            "synthesis": "Initial report structured. Now polishing...",
+                            "editing": "Report polished and ready!"
+                        }.get(step, "Step completed.")
+                        
+                        if step == "editing":
+                            st.session_state.current_report["creative_report"] = data
+                            st.session_state.new_report_generated = True
+                        
+                        status.update(label=f"✅ {completed_message}")
 
-        # --- Callback Function to Update UI ---
-        def update_ui_callback(output):
-            step = output.get("step")
-            status = output.get("status")
-            data = output.get("data")
-            message = output.get("message")
+                    elif status_val == "error":
+                        status.update(label=f"💥 Agent crashed: {message}", state="error")
 
-            placeholder = placeholders.get(step)
-            if not placeholder:
-                return
-
-            if status == "running":
-                placeholder.info(f"⏳ {message}")
-
-            elif status == "completed":
-                st.session_state.current_report["agent_details"][step] = data
-                placeholder.empty()
-                with placeholder.container():
-                    if step == "search":
-                        st.success(f"Found {len(data)} articles.")
-                        for i, article in enumerate(data, 1):
-                            st.markdown(f"{i}. [{article.get('title', 'Untitled')}]({article.get('url', '#')}) - *{article.get('source', 'Unknown')}* - `Published: {article.get('date', 'N/A')}`")
-                        expanders["profiling"].expanded = True
-                    
-                    elif step == "profiling":
-                        st.success("Profiling complete.")
-                        profiling_lookup = {item["id"]: item for item in data}
-                        raw_news_list = st.session_state.current_report["agent_details"].get('search', [])
-                        for article in raw_news_list:
-                            profile = profiling_lookup.get(article["id"], {})
-                            tags = [f"**{k.title()}**: `{v}`" for k, v in profile.items() if k != 'id']
-                            st.markdown(f"**📄 {article.get('title', 'Untitled')}**")
-                            if tags:
-                                st.markdown(" • ".join(tags))
-                            else:
-                                st.markdown("*Agent couldn't analyze this one* 🤷")
-                            st.markdown("---")
-                        expanders["selection"].expanded = True
-
-                    elif step == "selection":
-                        st.success(f"Selected {len(data)} articles for the final report.")
-                        for i, article in enumerate(data, 1):
-                            st.markdown(f"{i}. [{article.get('title', 'Untitled')}]({article.get('url', '#')}) - *{article.get('source', 'Unknown')}* - `Published: {article.get('date', 'N/A')}`")
-                        expanders["synthesis"].expanded = True
-
-                    elif step == "synthesis":
-                        st.success("✅ Initial report structured and passed to the Creative Editor.")
-                        expanders["editing"].expanded = True
-
-                    elif step == "editing":
-                        st.success("Report polished and ready!")
-                        st.markdown(data)
-                        st.session_state.current_report["creative_report"] = data
-
-            elif step == "error":
-                placeholder.error(f"💥 **Agent crashed:** {message}")
-
-        # --- Agent Pipeline Execution ---
-        user_preferences = {'focus': focus, 'depth': depth, 'tone': tone}
-        process_news(topic_input, user_preferences, status_callback=update_ui_callback)
-
-        # --- Final Output Display (Current Report) ---
-        if st.session_state.current_report and st.session_state.current_report["creative_report"]:
-            final_report_container.markdown("---")
-            final_report_container.header("📰 The Debate Breakdown")
-            final_report_container.markdown(st.session_state.current_report["creative_report"])
-            st.toast("Your report is ready!", icon="🎉")
-            st.balloons()
-        else:
-            final_report_container.error("The agent swarm failed to produce a final report.")
+                user_preferences = {'focus': focus, 'depth': depth, 'tone': tone}
+                process_news(topic_input, user_preferences, status_callback=update_ui_callback)
+                
+                if st.session_state.current_report and st.session_state.current_report.get("creative_report"):
+                    status.update(label="✅ Mission accomplished!", state="complete")
+                else:
+                    status.update(label="💥 Swarm failed to produce a report.", state="error")
 
     else:
-        st.warning("🎯 **Hey!** You forgot to enter a topic. The agents need something to work with!")
+        st.warning("🎯 **Hey!** You forgot to enter a topic.")
 
-# --- Display Current Report (if not just generated) ---
-# This block ensures the current report persists across reruns (e.g., sidebar changes)
-if not generate_btn and st.session_state.current_report and st.session_state.current_report["creative_report"]:
-    st.markdown("### Agent Processing Details")
-    # Re-render expanders with content from session state
-    expanders = {
-        "search": st.expander("**1. Search Agent** - Finding articles...", expanded=True),
-        "profiling": st.expander("**2. Profiler Agent** - Analyzing sources...", expanded=False),
-        "selection": st.expander("**3. Diversity Selector** - Choosing articles...", expanded=False),
-        "synthesis": st.expander("**4. Debate Synthesizer** - Structuring report...", expanded=False),
-        "editing": st.expander("**5. Creative Editor** - Polishing output...", expanded=False),
-    }
-    
-    # Populate expanders with archived data
-    for step, data in st.session_state.current_report["agent_details"].items():
-        with expanders[step]:
-            if step == "search":
-                st.success(f"Found {len(data)} articles.")
-                for i, article in enumerate(data, 1):
-                    st.markdown(f"{i}. [{article.get('title', 'Untitled')}]({article.get('url', '#')}) - *{article.get('source', 'Unknown')}* - `Published: {article.get('date', 'N/A')}`")
-            elif step == "profiling":
-                st.success("Profiling complete.")
-                profiling_lookup = {item["id"]: item for item in data}
-                raw_news_list = st.session_state.current_report["agent_details"].get('search', [])
-                for article in raw_news_list:
-                    profile = profiling_lookup.get(article["id"], {})
-                    tags = [f"**{k.title()}**: `{v}`" for k, v in profile.items() if k != 'id']
-                    st.markdown(f"**📄 {article.get('title', 'Untitled')}**")
-                    if tags:
-                        st.markdown(" • ".join(tags))
-                    else:
-                        st.markdown("*Agent couldn't analyze this one* 🤷")
-                    st.markdown("---")
-            elif step == "selection":
-                st.success(f"Selected {len(data)} articles for the final report.")
-                for i, article in enumerate(data, 1):
-                    st.markdown(f"{i}. [{article.get('title', 'Untitled')}]({article.get('url', '#')}) - *{article.get('source', 'Unknown')}* - `Published: {article.get('date', 'N/A')}`")
-            elif step == "synthesis":
-                st.success("✅ Initial report structured and passed to the Creative Editor.")
-            elif step == "editing":
-                st.success("Report polished and ready!")
-                st.markdown(data)
+# --- DISPLAY CURRENT REPORT ---
+if st.session_state.current_report and st.session_state.current_report.get("creative_report"):
+    with main_report_container:
+        st.markdown("---")
+        st.header("📰 The Debate Breakdown")
+        st.markdown(f"<div class='final-report'>{st.session_state.current_report['creative_report']}</div>", unsafe_allow_html=True)
 
-    st.markdown("---")
-    st.header("📰 The Debate Breakdown")
-    st.markdown(st.session_state.current_report["creative_report"])
+        if st.session_state.new_report_generated:
+            st.toast("Your report is ready!", icon="🎉")
+            st.session_state.new_report_generated = False # Reset the flag
 
-# --- Display Archived Reports ---
-if st.session_state.report_history:
-    st.markdown("---")
-    st.header("🗂️ Previous Analyses")
-    for i, report_data in enumerate(st.session_state.report_history):
-        with st.expander(f"Report for '{report_data.get('topic', 'N/A')}'", expanded=False):
-            st.markdown(report_data.get('creative_report', 'No report available.'))
+        with st.expander("🔍 **Nerd Stats** - See how the report was generated"):
+            agent_details = st.session_state.current_report.get("agent_details", {})
+            raw_news_list = agent_details.get('search')
+            profiling_output = agent_details.get('profiling')
+            selected_articles = agent_details.get('selection')
 
-# --- ABOUT SECTION (COLLAPSED) ---
-st.markdown("---")
-with st.expander("About This Application"):
-    st.markdown("""
-    ### Break free from your news bubble. Get the FULL story.
-
-    **The Problem:** Every news source has bias. CNN leans left, Fox leans right. TechCrunch loves startups, Reuters stays diplomatic. 
-    Your location, their politics, the author's expertise—it all shapes what you read. Relying on 1-2 sources? You're missing half the story.
-
-    **The Solution:** This smart news analyzer automatically:
-    - **Finds stories you'd miss** (sources from different countries, politics, industries)
-    - **Identifies each source's angle** (who's pro/anti, regional vs global perspective)
-    - **Shows you the full debate** (what supporters say vs what critics argue)  
-    - **Delivers one balanced summary** (all viewpoints in 2 minutes of reading)
-
-    **Bottom line:** Get the nuanced, multi-angle story in 2 minutes instead of spending an hour tab-hopping between biased sources.
-
-    ---
-
-    **How it works:**
-    - 🕷️ **Search Agent**: Crawls Google News for fresh articles
-    - 🧠 **Profiler Agent**: Tags sources by tone, region, and bias  
-    - 🎯 **Diversity Selector**: Picks articles that actually disagree with each other
-    - 🗣️ **Debate Synthesizer**: Crafts a structured report with multiple viewpoints
-    - 🎨 **Creative Editor**: Polishes the final output based on selected tone and depth.
-
-    **Pro tip**: Try controversial topics like "AI regulation", "crypto crash", or "remote work debate" for insightful results.
-    """)
+            if raw_news_list:
+                st.markdown("#### 🕷️ Raw Intel")
+                for i, article in enumerate(raw_news_list, 1):
+                    st.markdown(f"{i}. [{article.get('title', 'Untitled')}]({article.get('url', '#')})")
+                st.divider()
+            if profiling_output:
+                st.markdown("#### 🏷️ AI Profiling")
+                profiling_lookup = {item["id"]: item for item in profiling_output}
+                if raw_news_list:
+                    for article in raw_news_list:
+                        profile = profiling_lookup.get(article["id"], {})
+                        tags = [f"**{k.title()}**: `{v}`" for k, v in profile.items() if k != 'id']
+                        st.markdown(f"**📄 {article.get('title', 'Untitled')}**")
+                        if tags:
+                            st.markdown(" • ".join(tags))
+                        else:
+                            st.markdown("*Agent couldn't analyze this one* 🤷")
+                        st.markdown("---")
+                st.divider()
+            if selected_articles:
+                st.markdown("#### 🎯 Final Selection")
+                for i, article in enumerate(selected_articles, 1):
+                    st.markdown(f"{i}. [{article.get('title', 'Untitled')}]({article.get('url', '#')})")
 
 # --- FOOTER ---
 st.markdown("---")
-st.markdown("""
+st.markdown('''
 <div style='text-align: center; color: #666; font-size: 0.9em;'>
-Built with Python, Streamlit, and a lot of caffeine :D | <a href="https://github.com/spouyans/news_debate_app" target="_blank">GitHub Project</a>
+Built with Python, Streamlit, and a lot of caffeine :D | <a href="https://github.com/pouyan-sajadi/news-agent-v2" target="_blank">GitHub Project</a>
 </div>
-""", unsafe_allow_html=True)
+''', unsafe_allow_html=True)
+
 
