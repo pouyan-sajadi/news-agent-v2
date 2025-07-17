@@ -48,7 +48,6 @@ def search_news(topic):
     Returns a structured and cleaned JSON string of articles for downstream analysis.
     """
     logger.debug("Calling SerpAPI...")
-
     params = {
         "engine": "google",
         "q": f"{topic} news {datetime.now().strftime('%Y-%m')}",

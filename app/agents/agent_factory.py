@@ -1,13 +1,11 @@
 from swarm import Agent
 from .prompts import search_prompt, get_profiler_prompt, get_diversity_prompt, get_synthesizer_prompt, get_creative_editor_prompt
-from app.core.utils import search_news  
 from app.config import MODEL
 
 def create_search_agent():
     return Agent(
-        name="News Searcher",
+        name="Search Query Refiner",
         instructions=search_prompt,
-        functions=[search_news],
         model=MODEL
     )
 

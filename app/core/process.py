@@ -10,6 +10,7 @@ from app.agents.agent_factory import (
 )
 from swarm import Swarm
 from app.core.logger import logger
+from app.core.utils import search_news
 
 client = Swarm()
 
@@ -27,25 +28,49 @@ def process_news(topic, user_preferences, status_callback=None):
     os.makedirs("news_output", exist_ok=True)
     final_results = {}
 
-    # Step 1: Search
+    # Step 1: Refine Search Query
     try:
-        logger.info("🔍 Running Search Agent...")
-        notify({"step": "search", "status": "running", "message": "🔍 Searching for news..."})
+        logger.info("🔍 Refining search query...")
+        notify({"step": "search", "status": "running", "message": "🔍 Refining search query..."})
         search_agent_instance = create_search_agent()
+        refine_start_time = time.time()
         search_response = client.run(
             agent=search_agent_instance,
-            messages=[{"role": "user", "content": f"Find recent news about {topic}"}]
+            messages=[{"role": "user", "content": topic}]
         )
-        raw_news_list = json.loads(search_response.messages[-1]["content"])
-            # Check if no articles were found
-        if len(raw_news_list) == 0:
-            logger.warning(f"No articles found for topic: {topic}")
+        refine_duration = time.time() - refine_start_time
+        refined_topic = search_response.messages[-1]["content"].strip().strip('"')
+        logger.info(f"🤖 Search query refined in {refine_duration:.2f} seconds. New query: {refined_topic}")
+        logger.info(f"Checking if topics are identical: {refined_topic.lower() == topic.lower()}")
+
+        # Step 2: Search
+        logger.info(f"🔍 Calling search_news function with refined topic: {refined_topic}")
+        notify({"step": "search", "status": "running", "message": f"🔍 Searching for: {refined_topic}"})
+        search_start_time = time.time()
+        raw_news_json = search_news(refined_topic)
+        search_duration = time.time() - search_start_time
+        logger.info(f"✅ search_news function execution took {search_duration:.2f} seconds.")
+        
+        try:
+            raw_news_list = json.loads(raw_news_json)
+        except json.JSONDecodeError:
+            logger.error(f"Failed to decode JSON from search_news output: {raw_news_json}")
             notify({
                 "step": "search", 
                 "status": "error", 
-                 "message": f"No news about '{topic}' right now. Try something that's been in the headlines recently!"
+                 "message": f"The search function returned an invalid format. Please try again."
             })
             return None
+
+        if not raw_news_list:
+            logger.warning(f"No articles found for topic: {refined_topic}")
+            notify({
+                "step": "search", 
+                "status": "error", 
+                 "message": f"No news about '{refined_topic}' right now. Try something that's been in the headlines recently!"
+            })
+            return None
+            
         logger.info(f"Found {len(raw_news_list)} articles.")
         final_results['raw_news_list'] = raw_news_list
         notify({"step": "search", "status": "completed", "data": raw_news_list})
@@ -54,7 +79,7 @@ def process_news(topic, user_preferences, status_callback=None):
         notify({"step": "error", "message": f"Search failed: {e}"})
         return None
 
-    # Step 2: Profile Sources
+    # Step 3: Profile Sources
     try:
         logger.info("🧠 Running Source Profiler Agent...")
         notify({"step": "profiling", "status": "running", "message": "🧠 Profiling sources..."})
@@ -72,7 +97,7 @@ def process_news(topic, user_preferences, status_callback=None):
         notify({"step": "error", "message": f"Profiling failed: {e}"})
         return None
 
-    # Step 3: Select Diverse Subset
+    # Step 4: Select Diverse Subset
     try:
         logger.info("🧮 Running Diversity Selector Agent...")
         notify({"step": "selection", "status": "running", "message": "🧮 Selecting diverse articles..."})
@@ -92,7 +117,7 @@ def process_news(topic, user_preferences, status_callback=None):
         notify({"step": "error", "message": f"Selection failed: {e}"})
         return None
 
-    # Step 4: Synthesize Debate
+    # Step 5: Synthesize Debate
     try:
         logger.info("🗣️ Running Debate Synthesizer Agent...")
         notify({"step": "synthesis", "status": "running", "message": "🗣️ Synthesizing the debate..."})
@@ -109,7 +134,7 @@ def process_news(topic, user_preferences, status_callback=None):
         notify({"step": "error", "message": f"Synthesis failed: {e}"})
         return None
 
-    # Step 5: Creative Editor
+    # Step 6: Creative Editor
     try:
         logger.info("🎨 Running Creative Editor Agent...")
         notify({"step": "editing", "status": "running", "message": "🎨 Applying a creative touch..."})
