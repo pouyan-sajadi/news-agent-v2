@@ -427,7 +427,7 @@ if generate_btn:
 
         with status_container: # Use the new status container
             st.markdown("### Agents Status")
-            st.markdown("*Grab a coffee - this might take **2-3 minutes**...*")
+            st.markdown("*Grab a coffee - this might take up to a minute...*")
             with st.status("🚀 Initializing agent swarm...", expanded=True) as status:
                 def update_ui_callback(output):
                     step = output.get("step")
@@ -457,12 +457,12 @@ if generate_btn:
                         status.update(label=f"💥 Agent crashed: {message}", state="error")
 
                 user_preferences = {'focus': focus, 'depth': depth, 'tone': tone}
-                process_news(topic_input, user_preferences, status_callback=update_ui_callback)
+                process_successful = process_news(topic_input, user_preferences, status_callback=update_ui_callback)
                 
-                if st.session_state.current_report and st.session_state.current_report.get("creative_report"):
+                if process_successful:
                     status.update(label="✅ Mission accomplished!", state="complete")
-                else:
-                    status.update(label="💥 Swarm failed to produce a report.", state="error")
+                # If process_successful is False, a specific error message would have already been set by notify
+                # so we don't need to update the status here with a generic error.
 
     else:
         st.warning("🎯 **Hey!** You forgot to enter a topic.")
@@ -488,7 +488,7 @@ if st.session_state.current_report and st.session_state.current_report.get("crea
             if raw_news_list:
                 st.markdown("#### 🕷️ Raw Intel")
                 for i, article in enumerate(raw_news_list, 1):
-                    st.markdown(f"{i}. [{article.get('title', 'Untitled')}]({article.get('url', '#')})")
+                    st.markdown(f"{i}. {article.get('date', 'No date')} - [{article.get('title', 'Untitled')}]({article.get('url', '#')})")
                 st.divider()
             if profiling_output:
                 st.markdown("#### 🏷️ AI Profiling")

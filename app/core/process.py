@@ -58,26 +58,26 @@ def process_news(topic, user_preferences, status_callback=None):
             notify({
                 "step": "search", 
                 "status": "error", 
-                 "message": f"The search function returned an invalid format. Please try again."
+                 "message": f"We're having trouble understanding the search results. This might be a temporary issue with the news provider. Please try a different topic or try again later."
             })
-            return None
+            return False
 
         if not raw_news_list:
             logger.warning(f"No articles found for topic: {refined_topic}")
             notify({
                 "step": "search", 
                 "status": "error", 
-                 "message": f"No news about '{refined_topic}' right now. Try something that's been in the headlines recently!"
+                 "message": f"We couldn't find any recent articles for '{refined_topic}'. The topic might be too specific, or not currently widely covered. Try a broader term or a more current event."
             })
-            return None
+            return False
             
         logger.info(f"Found {len(raw_news_list)} articles.")
         final_results['raw_news_list'] = raw_news_list
         notify({"step": "search", "status": "completed", "data": raw_news_list})
     except Exception as e:
         logger.exception("Error in Search step")
-        notify({"step": "error", "message": f"Search failed: {e}"})
-        return None
+        notify({"step": "error", "message": f"The news search encountered an unexpected problem. This could be a network issue or a problem with the search service. Please check your internet connection and try again."})
+        return False
 
     # Step 3: Profile Sources
     try:
@@ -95,7 +95,7 @@ def process_news(topic, user_preferences, status_callback=None):
     except Exception as e:
         logger.exception("Error in Profiling step")
         notify({"step": "error", "message": f"Profiling failed: {e}"})
-        return None
+        return False
 
     # Step 4: Select Diverse Subset
     try:
@@ -115,7 +115,7 @@ def process_news(topic, user_preferences, status_callback=None):
     except Exception as e:
         logger.exception("Error in Selection step")
         notify({"step": "error", "message": f"Selection failed: {e}"})
-        return None
+        return False
 
     # Step 5: Synthesize Debate
     try:
@@ -132,7 +132,7 @@ def process_news(topic, user_preferences, status_callback=None):
     except Exception as e:
         logger.exception("Error in Synthesis step")
         notify({"step": "error", "message": f"Synthesis failed: {e}"})
-        return None
+        return False
 
     # Step 6: Creative Editor
     try:
@@ -149,7 +149,7 @@ def process_news(topic, user_preferences, status_callback=None):
     except Exception as e:
         logger.exception("Error in Editing step")
         notify({"step": "error", "message": f"Editing failed: {e}"})
-        return None
+        return False
         
     return final_results
 
