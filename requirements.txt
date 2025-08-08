@@ -11,3 +11,4 @@ flake8
 black
 safety
 bandit
+openai>=1.33.0
