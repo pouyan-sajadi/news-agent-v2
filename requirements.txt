@@ -1,5 +1,5 @@
-git+https://github.com/openai/swarm.git
-streamlit 
+swarm @ git+https://github.com/openai/swarm.git@0c82d7d868bb8e2d380dfd2a319b5c3a1f4c0cb9
+streamlit==1.47.0
 newspaper3k
 google-search-results==2.4.2
 lxml_html_clean
@@ -11,4 +11,4 @@ flake8
 black
 safety
 bandit
-openai>=1.33.0
+openai==1.97.0
